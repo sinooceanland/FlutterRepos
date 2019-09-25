@@ -133,7 +133,8 @@ class DioUtil {
     _pem = config.pem ?? _pem;
     if (_dio != null) {
       _dio.options = _options;
-      DefaultHttpClientAdapter defaultHttpClientAdapter = _dio.httpClientAdapter;
+      DefaultHttpClientAdapter defaultHttpClientAdapter =
+          _dio.httpClientAdapter;
       if (_pem != null) {
         defaultHttpClientAdapter.onHttpClientCreate = (HttpClient client) {
           client.badCertificateCallback =
@@ -166,50 +167,18 @@ class DioUtil {
   /// <BaseResp<T> 返回 status code msg data .
   Future<BaseResp<T>> request<T>(String method, String path,
       {data, Options options, CancelToken cancelToken}) async {
-    Response response = await _dio.request(path,
-        data: data,
-        options: _checkOptions(method, options),
-        cancelToken: cancelToken);
-    _printHttpLog(response);
-    String _status;
-    int _code;
-    String _msg;
-    T _data;
+    BaseRespR responseOject = await _requestR(method, path, 
+      data: data, 
+      options: options, 
+      cancelToken: cancelToken
+    ).catchError((e) => throw e);
     if (response.statusCode == HttpStatus.ok ||
         response.statusCode == HttpStatus.created) {
-      try {
-        if (response.data is Map) {
-          _status = (response.data[_statusKey] is int)
-              ? response.data[_statusKey].toString()
-              : response.data[_statusKey];
-          _code = (response.data[_codeKey] is String)
-              ? int.tryParse(response.data[_codeKey])
-              : response.data[_codeKey];
-          _msg = response.data[_msgKey];
-          _data = response.data[_dataKey];
-        } else {
-          Map<String, dynamic> _dataMap = _decodeData(response);
-          _status = (_dataMap[_statusKey] is int)
-              ? _dataMap[_statusKey].toString()
-              : _dataMap[_statusKey];
-          _code = (_dataMap[_codeKey] is String)
-              ? int.tryParse(_dataMap[_codeKey])
-              : _dataMap[_codeKey];
-          _msg = _dataMap[_msgKey];
-          _data = _dataMap[_dataKey];
-        }
-        return new BaseResp(_status, _code, _msg, _data);
-      } catch (e) {
-        return new Future.error(new DioError(
-          response: response,
-          message: "data parsing exception...",
-          type: DioErrorType.RESPONSE,
-        ));
-      }
+      return new BaseRespR(responseOject.status responseOject.code, responseOject.msg, responseOject.data);
     }
     return new Future.error(new DioError(
-      response: response,
-      message: "statusCode: $response.statusCode, service error",
+      response: responseOject.response,
+      message: "statusCode: ${responseOject.response.statusCode}, service error",
       type: DioErrorType.RESPONSE,
     ));
   }
@@ -222,10 +191,34 @@ class DioUtil {
   /// <BaseRespR<T> 返回 status code msg data  Response.
   Future<BaseRespR<T>> requestR<T>(String method, String path,
       {data, Options options, CancelToken cancelToken}) async {
+    BaseRespR responseOject = await _requestR(method, path, 
+      data: data, 
+      options: options, 
+      cancelToken: cancelToken
+    ).catchError((e) => throw e);
+    if (response.statusCode == HttpStatus.ok ||
+        response.statusCode == HttpStatus.created) {
+      return new BaseRespR(responseOject.status responseOject.code, responseOject.msg, responseOject.data, responseOject.response);
+    }
+    return new Future.error(new DioError(
+      response: responseOject.response,
+      message: "statusCode: ${responseOject.response.statusCode}, service error",
+      type: DioErrorType.RESPONSE,
+    ));
+  }
+
+  /// Make http request with options.
+  /// [method] The request method.
+  /// [path] The url path.
+  /// [data] The request data
+  /// [options] The request options.
+  /// <BaseRespR<T> 返回 status code msg data  Response.
+  Future<BaseRespR<T>> _requestR<T>(String method, String path,
+      {data, Options options, CancelToken cancelToken}) async {
     Response response = await _dio.request(path,
         data: data,
         options: _checkOptions(method, options),
-        cancelToken: cancelToken);
+        cancelToken: cancelToken).catchError(e => throw e);
     _printHttpLog(response);
     String _status;
     int _code;
@@ -323,7 +316,7 @@ class DioUtil {
 //    _options.followRedirects = opt.followRedirects ?? _options.followRedirects;
 
     _options.method = opt.method ?? _options.method;
-    _options.baseUrl =  opt.baseUrl ?? _options.baseUrl;
+    _options.baseUrl = opt.baseUrl ?? _options.baseUrl;
     _options.queryParameters = opt.queryParameters ?? _options.queryParameters;
     _options.connectTimeout = opt.connectTimeout ?? _options.connectTimeout;
     _options.receiveTimeout = opt.receiveTimeout ?? _options.receiveTimeout;
@@ -332,7 +325,8 @@ class DioUtil {
     _options.responseType = opt.responseType ?? _options.responseType;
     _options.contentType = opt.contentType ?? _options.contentType;
     _options.validateStatus = opt.validateStatus ?? _options.validateStatus;
-    _options.receiveDataWhenStatusError = opt.receiveDataWhenStatusError ?? _options.receiveDataWhenStatusError;
+    _options.receiveDataWhenStatusError =
+        opt.receiveDataWhenStatusError ?? _options.receiveDataWhenStatusError;
     _options.followRedirects = opt.followRedirects ?? _options.followRedirects;
     _options.maxRedirects = opt.maxRedirects ?? _options.maxRedirects;
     _options.requestEncoder = opt.requestEncoder;
