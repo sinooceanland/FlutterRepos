@@ -172,9 +172,9 @@ class DioUtil {
       options: options, 
       cancelToken: cancelToken
     ).catchError((e) => throw e);
-    if (response.statusCode == HttpStatus.ok ||
-        response.statusCode == HttpStatus.created) {
-      return new BaseRespR(responseOject.status responseOject.code, responseOject.msg, responseOject.data);
+    if (responseOject.response.statusCode == HttpStatus.ok ||
+        responseOject.response.statusCode == HttpStatus.created) {
+      return new BaseResp(responseOject.status, responseOject.code, responseOject.msg, responseOject.data);
     }
     return new Future.error(new DioError(
       response: responseOject.response,
@@ -196,9 +196,9 @@ class DioUtil {
       options: options, 
       cancelToken: cancelToken
     ).catchError((e) => throw e);
-    if (response.statusCode == HttpStatus.ok ||
-        response.statusCode == HttpStatus.created) {
-      return new BaseRespR(responseOject.status responseOject.code, responseOject.msg, responseOject.data, responseOject.response);
+    if (responseOject.response.statusCode == HttpStatus.ok ||
+        responseOject.response.statusCode == HttpStatus.created) {
+      return new BaseRespR(responseOject.status, responseOject.code, responseOject.msg, responseOject.data, responseOject.response);
     }
     return new Future.error(new DioError(
       response: responseOject.response,
@@ -218,7 +218,7 @@ class DioUtil {
     Response response = await _dio.request(path,
         data: data,
         options: _checkOptions(method, options),
-        cancelToken: cancelToken).catchError(e => throw e);
+        cancelToken: cancelToken).catchError((e) => throw e);
     _printHttpLog(response);
     String _status;
     int _code;
