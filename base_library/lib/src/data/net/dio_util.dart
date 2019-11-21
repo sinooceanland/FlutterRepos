@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dio/src/adapters/io_adapter.dart' show DefaultHttpClientAdapter;
 
 import '../protocol/base_resp.dart';
 
@@ -167,14 +168,13 @@ class DioUtil {
   /// <BaseResp<T> 返回 status code msg data .
   Future<BaseResp<T>> request<T>(String method, String path,
       {data, Options options, CancelToken cancelToken}) async {
-    BaseRespR responseOject = await _requestR(method, path, 
-      data: data, 
-      options: options, 
-      cancelToken: cancelToken
-    ).catchError((e) => throw e);
+    BaseRespR responseOject = await _requestR(method, path,
+            data: data, options: options, cancelToken: cancelToken)
+        .catchError((e) => throw e);
     if (responseOject.response.statusCode == HttpStatus.ok ||
         responseOject.response.statusCode == HttpStatus.created) {
-      return new BaseResp(responseOject.status, responseOject.code, responseOject.msg, responseOject.data);
+      return new BaseResp(responseOject.status, responseOject.code,
+          responseOject.msg, responseOject.data);
     }
     return new Future.error(new DioError(
       response: responseOject.response,
@@ -191,14 +191,13 @@ class DioUtil {
   /// <BaseRespR<T> 返回 status code msg data  Response.
   Future<BaseRespR<T>> requestR<T>(String method, String path,
       {data, Options options, CancelToken cancelToken}) async {
-    BaseRespR responseOject = await _requestR(method, path, 
-      data: data, 
-      options: options, 
-      cancelToken: cancelToken
-    ).catchError((e) => throw e);
+    BaseRespR responseOject = await _requestR(method, path,
+            data: data, options: options, cancelToken: cancelToken)
+        .catchError((e) => throw e);
     if (responseOject.response.statusCode == HttpStatus.ok ||
         responseOject.response.statusCode == HttpStatus.created) {
-      return new BaseRespR(responseOject.status, responseOject.code, responseOject.msg, responseOject.data, responseOject.response);
+      return new BaseRespR(responseOject.status, responseOject.code,
+          responseOject.msg, responseOject.data, responseOject.response);
     }
     return new Future.error(new DioError(
       response: responseOject.response,
@@ -215,10 +214,12 @@ class DioUtil {
   /// <BaseRespR<T> 返回 status code msg data  Response.
   Future<BaseRespR<T>> _requestR<T>(String method, String path,
       {data, Options options, CancelToken cancelToken}) async {
-    Response response = await _dio.request(path,
-        data: data,
-        options: _checkOptions(method, options),
-        cancelToken: cancelToken).catchError((e) => throw e);
+    Response response = await _dio
+        .request(path,
+            data: data,
+            options: _checkOptions(method, options),
+            cancelToken: cancelToken)
+        .catchError((e) => throw e);
     _printHttpLog(response);
     String _status;
     int _code;
@@ -390,8 +391,7 @@ class DioUtil {
   /// get Def Options.
   static BaseOptions getDefOptions() {
     BaseOptions options = new BaseOptions();
-    options.contentType =
-        ContentType.parse("application/x-www-form-urlencoded");
+    options.contentType = "application/x-www-form-urlencoded";
     options.connectTimeout = 1000 * 30;
     options.receiveTimeout = 1000 * 30;
     return options;
