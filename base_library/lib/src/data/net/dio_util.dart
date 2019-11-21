@@ -178,7 +178,7 @@ class DioUtil {
     }
     return new Future.error(new DioError(
       response: responseOject.response,
-      message: "statusCode: ${responseOject.response.statusCode}, service error",
+      error: "statusCode: ${responseOject.response.statusCode}, service error",
       type: DioErrorType.RESPONSE,
     ));
   }
@@ -202,7 +202,7 @@ class DioUtil {
     }
     return new Future.error(new DioError(
       response: responseOject.response,
-      message: "statusCode: ${responseOject.response.statusCode}, service error",
+      error: "statusCode: ${responseOject.response.statusCode}, service error",
       type: DioErrorType.RESPONSE,
     ));
   }
@@ -251,14 +251,14 @@ class DioUtil {
       } catch (e) {
         return new Future.error(new DioError(
           response: response,
-          message: "data parsing exception...",
+          error: "data parsing exception...",
           type: DioErrorType.RESPONSE,
         ));
       }
     }
     return new Future.error(new DioError(
       response: response,
-      message: "statusCode: $response.statusCode, service error",
+      error: "statusCode: $response.statusCode, service error",
       type: DioErrorType.RESPONSE,
     ));
   }
