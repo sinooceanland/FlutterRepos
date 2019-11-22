@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+// https://github.com/flutterchina/dio/blob/632931586b5153fb03f58a75378e59b564276b82/dio/lib/adapter.dart
 import 'package:dio/src/adapters/io_adapter.dart' show DefaultHttpClientAdapter;
 
 import '../protocol/base_resp.dart';

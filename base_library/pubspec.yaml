@@ -23,7 +23,7 @@ dependencies:
 
   # https://github.com/flutterchina/dio
   # dio: 1.0.13
-  dio: ^3.0.4
+  dio: ^3.0.3
 
 
 dev_dependencies:
